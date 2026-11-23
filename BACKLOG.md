@@ -2,7 +2,8 @@
 
 One item per day. Each item ships code with a test and a `learn/NN-topic.md` note with one diagram.
 
-- [ ] 01 MCP proxy: stdio and HTTP passthrough that logs every `tools/call`. Learn: MCP message flow (initialize, tools/list, tools/call)
+- [x] 01a MCP proxy: stdio passthrough that logs every `tools/call`. Learn: MCP message flow (initialize, tools/list, tools/call)
+- [ ] 01b MCP proxy: Streamable HTTP passthrough that logs every `tools/call`. Learn: MCP HTTP transport and sessions
 - [ ] 02 Decision API: `check(request) -> allow|deny + reason`, static allowlist. Learn: policy decision point vs enforcement point
 - [ ] 03 OPA integration, first Rego policy (tool allowlist per agent). Learn: Rego basics
 - [ ] 04 Argument rules in Rego (amount limits, path globs, domain allowlists). Learn: writing testable policy, `opa test`
