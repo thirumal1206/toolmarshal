@@ -1,0 +1,6 @@
+{
+  "agents": {
+    "support-bot": ["read_file", "search"],
+    "anonymous": []
+  }
+}

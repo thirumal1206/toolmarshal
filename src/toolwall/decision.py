@@ -11,6 +11,7 @@ class Request:
 
     tool: str
     arguments: dict[str, Any] = field(default_factory=dict)
+    agent: str = "anonymous"
 
 
 @dataclass(frozen=True)

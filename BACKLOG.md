@@ -5,7 +5,8 @@ One item per day. Each item ships code with a test and a `learn/NN-topic.md` not
 - [x] 01a MCP proxy: stdio passthrough that logs every `tools/call`. Learn: MCP message flow (initialize, tools/list, tools/call)
 - [x] 01b MCP proxy: Streamable HTTP passthrough that logs every `tools/call`. Learn: MCP HTTP transport and sessions
 - [x] 02 Decision API: `check(request) -> allow|deny + reason`, static allowlist. Learn: policy decision point vs enforcement point
-- [ ] 03 OPA integration, first Rego policy (tool allowlist per agent). Learn: Rego basics
+- [x] 03 OPA integration, first Rego policy (tool allowlist per agent). Learn: Rego basics
+- [ ] 03b Enforce: both proxies call the decision and return a JSON-RPC error on deny. Learn: enforcement point behaviour and failing closed
 - [ ] 04 Argument rules in Rego (amount limits, path globs, domain allowlists). Learn: writing testable policy, `opa test`
 - [ ] 05 Agent identity from JWT claims, on behalf of user. Learn: OAuth 2.1 and how MCP auth works
 - [ ] 06 Token exchange (RFC 8693): swap user token for short lived per tool token. Learn: delegation chains
