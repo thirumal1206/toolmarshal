@@ -19,12 +19,12 @@ sequenceDiagram
 
 `tools/list` is what the model sees. `tools/call` is where something happens in the outside world.
 
-## Where toolwall sits
+## Where toolmarshal sits
 
 ```mermaid
 sequenceDiagram
     participant C as Client
-    participant T as toolwall proxy
+    participant T as toolmarshal proxy
     participant S as MCP server (child)
     C->>T: tools/call refund {amount: 500}
     Note over T: log to stderr (later: check policy)

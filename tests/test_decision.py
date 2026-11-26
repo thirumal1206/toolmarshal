@@ -1,4 +1,4 @@
-from toolwall.decision import Decision, Request, check
+from toolmarshal.decision import Decision, Request, check
 
 
 def test_allows_tool_on_allowlist() -> None:

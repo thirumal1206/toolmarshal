@@ -5,7 +5,7 @@ import sys
 
 import pytest
 
-from toolwall.proxy import log_if_tool_call, main, pump
+from toolmarshal.proxy import log_if_tool_call, main, pump
 
 FAKE_SERVER = (
     "import sys, json\n"
@@ -26,7 +26,7 @@ def test_logs_tool_call_with_name_and_arguments() -> None:
         _msg(id=3, method="tools/call", params={"name": "refund", "arguments": {"amount": 500}}),
         log,
     )
-    entry = json.loads(log.getvalue().removeprefix("toolwall "))
+    entry = json.loads(log.getvalue().removeprefix("toolmarshal "))
     assert entry == {"id": 3, "tool": "refund", "arguments": {"amount": 500}}
 
 
@@ -61,7 +61,7 @@ def test_end_to_end_passthrough() -> None:
         _msg(id=2, method="tools/call", params={"name": "refund", "arguments": {}}),
     ]
     out = subprocess.run(
-        [sys.executable, "-m", "toolwall.proxy", sys.executable, "-c", FAKE_SERVER],
+        [sys.executable, "-m", "toolmarshal.proxy", sys.executable, "-c", FAKE_SERVER],
         input=b"".join(requests),
         capture_output=True,
         timeout=10,
@@ -69,4 +69,4 @@ def test_end_to_end_passthrough() -> None:
     )
     replies = [json.loads(line)["result"]["echo"] for line in out.stdout.splitlines()]
     assert replies == ["initialize", "tools/call"]
-    assert out.stderr.count(b"toolwall ") == 1
+    assert out.stderr.count(b"toolmarshal ") == 1

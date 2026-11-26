@@ -6,10 +6,10 @@ OPA answers one question: is this allowed? The application sends facts. OPA appl
 
 ```mermaid
 sequenceDiagram
-    participant T as toolwall
+    participant T as toolmarshal
     participant O as OPA server
     participant P as Rego policy + data.json
-    T->>O: POST /v1/data/toolwall/allow {input: agent, tool, arguments}
+    T->>O: POST /v1/data/toolmarshal/allow {input: agent, tool, arguments}
     O->>P: evaluate allow with input
     P-->>O: true, false, or undefined
     O-->>T: {"result": true}
@@ -29,7 +29,7 @@ flowchart LR
 ## The policy, line by line
 
 ```rego
-package toolwall
+package toolmarshal
 
 import rego.v1
 
@@ -38,7 +38,7 @@ default allow := false
 allow if input.tool in data.agents[input.agent]
 ```
 
-- `package toolwall` puts the rule at `/v1/data/toolwall/allow`.
+- `package toolmarshal` puts the rule at `/v1/data/toolmarshal/allow`.
 - `default allow := false` is the fail closed line. When no rule holds, the answer is `false`.
 - `data.agents[input.agent]` looks up the list for this agent. An agent that is not in the data has no list, so the expression is undefined and the rule does not hold.
 - `input.tool in ...` is true when the tool is in that list.
@@ -52,7 +52,7 @@ allow if input.tool in data.agents[input.agent]
 | unknown-bot | read_file | false (no list for this agent) |
 | anonymous | anything | false (empty list) |
 
-## Failing closed in toolwall
+## Failing closed in toolmarshal
 
 ```mermaid
 flowchart TD

@@ -4,11 +4,11 @@ import json
 from urllib.request import Request as HttpRequest
 from urllib.request import urlopen
 
-from toolwall.decision import Decision, Request
+from toolmarshal.decision import Decision, Request
 
 
 def check_opa(request: Request, url: str, timeout: float = 2.0) -> Decision:
-    """Ask OPA at ``url`` (e.g. http://127.0.0.1:8181/v1/data/toolwall/allow). Deny on any doubt."""
+    """Ask OPA at ``url`` (e.g. http://127.0.0.1:8181/v1/data/toolmarshal/allow). Deny on doubt."""
     payload = {
         "input": {"agent": request.agent, "tool": request.tool, "arguments": request.arguments}
     }

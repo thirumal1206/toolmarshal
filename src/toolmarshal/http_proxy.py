@@ -6,7 +6,7 @@ from http.client import HTTPConnection, HTTPSConnection
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlsplit
 
-from toolwall.proxy import log_if_tool_call
+from toolmarshal.proxy import log_if_tool_call
 
 # Hop-by-hop or recomputed by this proxy; everything else, Mcp-Session-Id included, passes.
 _DROP = {"host", "connection", "keep-alive", "transfer-encoding", "content-length"}
@@ -59,13 +59,13 @@ def make_handler(upstream: str) -> type[BaseHTTPRequestHandler]:
 
 def main(argv: list[str] | None = None) -> int:
     """Listen on localhost and proxy Streamable HTTP to the upstream MCP endpoint."""
-    parser = argparse.ArgumentParser(prog="toolwall-http")
+    parser = argparse.ArgumentParser(prog="toolmarshal-http")
     parser.add_argument("upstream", help="upstream MCP endpoint, e.g. http://127.0.0.1:9000/mcp")
     parser.add_argument("--port", type=int, default=8080)
     args = parser.parse_args(argv)
     # Localhost only: MCP spec warns local servers bound wider are open to DNS rebinding.
     server = ThreadingHTTPServer(("127.0.0.1", args.port), make_handler(args.upstream))
-    print(f"toolwall-http listening on 127.0.0.1:{server.server_port}", file=sys.stderr)
+    print(f"toolmarshal-http listening on 127.0.0.1:{server.server_port}", file=sys.stderr)
     server.serve_forever()
     return 0
 

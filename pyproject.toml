@@ -1,5 +1,5 @@
 [project]
-name = "toolwall"
+name = "toolmarshal"
 version = "0.0.1"
 description = "Policy firewall for agent tool calls"
 readme = "README.md"
@@ -8,8 +8,8 @@ requires-python = ">=3.11"
 dependencies = []
 
 [project.scripts]
-toolwall = "toolwall.proxy:main"
-toolwall-http = "toolwall.http_proxy:main"
+toolmarshal = "toolmarshal.proxy:main"
+toolmarshal-http = "toolmarshal.http_proxy:main"
 
 [build-system]
 requires = ["hatchling"]

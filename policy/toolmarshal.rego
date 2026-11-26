@@ -1,4 +1,4 @@
-package toolwall
+package toolmarshal
 
 import rego.v1
 
