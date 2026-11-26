@@ -1,6 +1,8 @@
 # toolwall
 
-Policy firewall for agent tool calls. Decides whether *this agent* may call *this tool* with *these arguments* right now, before the call reaches the MCP server.
+A policy firewall for agent tool calls, in early development. The aim is to decide whether *this agent* may call *this tool* with *these arguments* right now, before the call reaches the MCP server.
+
+Today it logs tool calls and has the first decision engine. It does not block anything yet. See [What works today](#what-works-today).
 
 ## Why
 
@@ -8,14 +10,16 @@ Guardrail libraries inspect text. Gateways route traffic. Nobody answers the aut
 
 toolwall does not replace a gateway. It plugs into one as a policy decision point, the way admission controllers plug into Kubernetes.
 
-## How it works
+## Target architecture
+
+This is where the project is heading. The [backlog](BACKLOG.md) says which parts exist.
 
 ```mermaid
 sequenceDiagram
     participant A as Agent
     participant G as Gateway
     participant T as toolwall
-    participant P as Policy (Rego / Cedar)
+    participant P as Policy (Rego)
     participant M as MCP server
     A->>G: tools/call refund(order, 500)
     G->>T: check(identity, tool, args, taint, spend)
@@ -26,6 +30,13 @@ sequenceDiagram
     Note over T,M: on allow: mint short lived scoped token, forward
 ```
 
+## What works today
+
+- A stdio proxy and an HTTP proxy that sit in front of an MCP server and log every `tools/call`. They pass all traffic through unchanged.
+- A decision function with a static allowlist, and one backed by OPA. The OPA version sends the agent, tool and arguments to an OPA server and denies on any error or odd reply. The first Rego policy is a per agent tool allowlist (see `policy/`).
+- The proxies do not call the decision point yet, so nothing is blocked. That is item 03b in the backlog.
+- Not built yet: argument rules, agent identity, token exchange, spend budgets, taint tracking, human approval, OpenTelemetry audit and gateway integration.
+
 ## Status
 
-Early. See [BACKLOG.md](BACKLOG.md).
+Early development, not ready for production use. Progress is tracked in [BACKLOG.md](BACKLOG.md).
