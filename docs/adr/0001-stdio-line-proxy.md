@@ -5,7 +5,7 @@
 
 ## Context
 
-toolwall must see every `tools/call` before it reaches an MCP server, without the client or server knowing it is there. The stdio transport sends one JSON-RPC message per line and forbids newlines inside a message.
+toolmarshal must see every `tools/call` before it reaches an MCP server, without the client or server knowing it is there. The stdio transport sends one JSON-RPC message per line and forbids newlines inside a message.
 
 ## Decision
 
@@ -21,4 +21,4 @@ Run the server as a child process and copy lines in both directions, one thread 
 ## Alternatives considered
 
 - Asyncio: no gain for two byte streams and harder to read.
-- Using the MCP Python SDK: adds a dependency and couples toolwall to one SDK version.
+- Using the MCP Python SDK: adds a dependency and couples toolmarshal to one SDK version.

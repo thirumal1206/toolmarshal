@@ -1,4 +1,4 @@
-# 0004 OPA runs as a server, and toolwall denies when it cannot get an answer
+# 0004 OPA runs as a server, and toolmarshal denies when it cannot get an answer
 
 - Status: accepted
 - Date: 2026-11-26
@@ -9,13 +9,13 @@ Item 02 made the decision a pure function over a static allowlist. Per agent rul
 
 ## Decision
 
-Run OPA as a separate server and ask it once per request: `POST /v1/data/toolwall/allow` with `{"input": {agent, tool, arguments}}`. `toolwall.opa.check_opa` returns the same `Decision` as `check`. Only a literal `true` allows. Anything else denies: `false`, an undefined result, a wrong type, an HTTP error, a timeout or an unreachable server. The policy lives in `policy/`: `toolwall.rego` for the rule and `data.json` for the agent allowlists.
+Run OPA as a separate server and ask it once per request: `POST /v1/data/toolmarshal/allow` with `{"input": {agent, tool, arguments}}`. `toolmarshal.opa.check_opa` returns the same `Decision` as `check`. Only a literal `true` allows. Anything else denies: `false`, an undefined result, a wrong type, an HTTP error, a timeout or an unreachable server. The policy lives in `policy/`: `toolmarshal.rego` for the rule and `data.json` for the agent allowlists.
 
 ## Consequences
 
 - Rules and allowlists change without touching Python, and a security owner can review them as files.
 - The decision stays one call from the front ends, so item 03b can wire both proxies to it.
-- OPA is now a runtime dependency that must be running next to toolwall. If it is down, every tool call is denied. That is the safe failure, and it is visible in the reason string.
+- OPA is now a runtime dependency that must be running next to toolmarshal. If it is down, every tool call is denied. That is the safe failure, and it is visible in the reason string.
 - One local HTTP round trip per tool call. The OPA server holds the policy in memory, so the cost is small, but it is not zero.
 - Python tests use a fake OPA server. The Rego itself is exercised by `opa test` in item 04.
 - `Request` gains an `agent` field, defaulting to `anonymous`. Real identity from a token arrives in item 05.

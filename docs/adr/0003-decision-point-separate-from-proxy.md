@@ -9,7 +9,7 @@ The stdio and HTTP front ends both need an allow or deny answer for each `tools/
 
 ## Decision
 
-`toolwall.decision.check(request, allowlist) -> Decision` is a pure function over plain data. It does no I/O and knows nothing about transports. Default deny. Every decision carries a reason string.
+`toolmarshal.decision.check(request, allowlist) -> Decision` is a pure function over plain data. It does no I/O and knows nothing about transports. Default deny. Every decision carries a reason string.
 
 ## Consequences
 

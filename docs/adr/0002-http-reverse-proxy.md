@@ -5,7 +5,7 @@
 
 ## Context
 
-Remote MCP servers use the Streamable HTTP transport: one endpoint, `POST` for client messages, replies as either JSON or an SSE stream, optional `GET` for a server stream, `DELETE` to end a session. The session is carried in the `Mcp-Session-Id` header. toolwall must see each `tools/call` without breaking any of this.
+Remote MCP servers use the Streamable HTTP transport: one endpoint, `POST` for client messages, replies as either JSON or an SSE stream, optional `GET` for a server stream, `DELETE` to end a session. The session is carried in the `Mcp-Session-Id` header. toolmarshal must see each `tools/call` without breaking any of this.
 
 ## Decision
 
@@ -22,5 +22,5 @@ Run a threaded `http.server` on localhost that forwards every request to one con
 ## Alternatives considered
 
 - Asyncio with aiohttp or httpx: scales to many streams but adds a dependency before there is a need.
-- Terminate MCP in the proxy with the MCP SDK and re-originate: full message awareness, but couples toolwall to one SDK and owns session state.
+- Terminate MCP in the proxy with the MCP SDK and re-originate: full message awareness, but couples toolmarshal to one SDK and owns session state.
 - Envoy or a gateway with ext_authz: the long term home (backlog 12), too heavy for learning the transport.

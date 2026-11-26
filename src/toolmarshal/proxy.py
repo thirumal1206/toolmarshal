@@ -19,7 +19,7 @@ def log_if_tool_call(line: bytes, log: TextIO | None = None) -> None:
     params = msg.get("params") or {}
     entry = {"id": msg.get("id"), "tool": params.get("name"), "arguments": params.get("arguments")}
     # stdout is the protocol channel, so logs go to stderr
-    print("toolwall " + json.dumps(entry), file=log or sys.stderr, flush=True)
+    print("toolmarshal " + json.dumps(entry), file=log or sys.stderr, flush=True)
 
 
 def pump(
@@ -38,7 +38,7 @@ def main(argv: list[str] | None = None) -> int:
     """Run the MCP server given in ``argv`` and proxy stdio to it."""
     cmd = argv if argv is not None else sys.argv[1:]
     if not cmd:
-        print("usage: toolwall <mcp server command> [args...]", file=sys.stderr)
+        print("usage: toolmarshal <mcp server command> [args...]", file=sys.stderr)
         return 2
     # Command comes from the operator, never from the agent.
     child = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)  # noqa: S603

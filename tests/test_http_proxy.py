@@ -6,7 +6,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import pytest
 
-from toolwall.http_proxy import main, make_handler
+from toolmarshal.http_proxy import main, make_handler
 
 
 class FakeMcpServer(BaseHTTPRequestHandler):

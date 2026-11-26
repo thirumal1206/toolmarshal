@@ -6,8 +6,8 @@ from typing import ClassVar
 
 import pytest
 
-from toolwall.decision import Request
-from toolwall.opa import check_opa
+from toolmarshal.decision import Request
+from toolmarshal.opa import check_opa
 
 
 class FakeOpa(BaseHTTPRequestHandler):
@@ -30,7 +30,7 @@ class FakeOpa(BaseHTTPRequestHandler):
 def opa_url() -> Iterator[str]:
     server = ThreadingHTTPServer(("127.0.0.1", 0), FakeOpa)
     threading.Thread(target=server.serve_forever, daemon=True).start()
-    yield f"http://127.0.0.1:{server.server_port}/v1/data/toolwall/allow"
+    yield f"http://127.0.0.1:{server.server_port}/v1/data/toolmarshal/allow"
     server.shutdown()
     server.server_close()
 
@@ -44,7 +44,7 @@ def test_true_allows_and_input_carries_agent_tool_and_arguments(opa_url: str) ->
     decision = check_opa(Request("refund", {"amount": 5}, agent="support-bot"), opa_url)
     assert decision.allow
     assert "support-bot" in decision.reason
-    assert FakeOpa.seen["path"] == "/v1/data/toolwall/allow"
+    assert FakeOpa.seen["path"] == "/v1/data/toolmarshal/allow"
     assert FakeOpa.seen["body"] == {
         "input": {"agent": "support-bot", "tool": "refund", "arguments": {"amount": 5}}
     }

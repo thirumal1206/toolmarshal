@@ -37,12 +37,12 @@ stateDiagram-v2
 
 The session ID is the only session state the client carries. It sits in a header, not in the JSON, so a proxy that passes headers keeps sessions working without understanding them.
 
-## Where toolwall sits
+## Where toolmarshal sits
 
 ```mermaid
 sequenceDiagram
     participant C as Client
-    participant T as toolwall-http (127.0.0.1:8080)
+    participant T as toolmarshal-http (127.0.0.1:8080)
     participant S as MCP server
     C->>T: POST tools/call refund
     Note over T: read body, log tools/call
@@ -69,7 +69,7 @@ flowchart TD
 
 ## Why this design
 
-- Byte level pass through. toolwall reads client requests and never rebuilds replies, so MCP features it does not know about keep working.
+- Byte level pass through. toolmarshal reads client requests and never rebuilds replies, so MCP features it does not know about keep working.
 - `read1` instead of `read`: `read(65536)` waits for a full buffer, which would hold back SSE events. `read1` returns whatever has arrived.
 - HTTP/1.0 to the client means the stream ends when the connection closes. No chunked encoding to write, at the cost of no keep alive.
 - Hop by hop headers (`Connection`, `Transfer-Encoding`, ...) describe one hop, so they are dropped. `Content-Length` is dropped too, since the reply ends when the connection closes.
