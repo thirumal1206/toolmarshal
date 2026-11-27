@@ -36,9 +36,9 @@ sequenceDiagram
 
 ## What works today
 
-- A stdio proxy and an HTTP proxy that sit in front of an MCP server and log every `tools/call`. They pass all traffic through unchanged.
+- A stdio proxy and an HTTP proxy that sit in front of an MCP server and log every `tools/call`. Other traffic passes through unchanged.
 - A decision function with a static allowlist, and one backed by OPA. The OPA version sends the agent, tool and arguments to an OPA server and denies on any error or odd reply. The first Rego policy is a per agent tool allowlist (see `policy/`).
-- The proxies do not call the decision point yet, so nothing is blocked. That is item 03b in the backlog.
+- Set `TOOLMARSHAL_OPA_URL` (for example `http://127.0.0.1:8181/v1/data/toolmarshal/allow`) and both proxies ask OPA before forwarding a `tools/call`. A denied call gets a JSON-RPC error and never reaches the server. If OPA is down or the call is malformed, it is denied too. Without the variable the proxies only log. Every call still runs as agent `anonymous` until item 05.
 - Not built yet: argument rules, agent identity, token exchange, spend budgets, taint tracking, human approval, OpenTelemetry audit and gateway integration.
 
 ## Status

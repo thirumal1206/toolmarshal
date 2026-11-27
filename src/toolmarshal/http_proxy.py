@@ -6,14 +6,14 @@ from http.client import HTTPConnection, HTTPSConnection
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlsplit
 
-from toolmarshal.proxy import log_if_tool_call
+from toolmarshal.proxy import Decide, decider_from_env, enforce, log_if_tool_call
 
 # Hop-by-hop or recomputed by this proxy; everything else, Mcp-Session-Id included, passes.
 _DROP = {"host", "connection", "keep-alive", "transfer-encoding", "content-length"}
 
 
-def make_handler(upstream: str) -> type[BaseHTTPRequestHandler]:
-    """Build a request handler class bound to the upstream MCP endpoint URL."""
+def make_handler(upstream: str, decide: Decide | None = None) -> type[BaseHTTPRequestHandler]:
+    """Build a handler for the upstream endpoint; ``decide`` blocks denied tool calls."""
     url = urlsplit(upstream)
     conn_cls = HTTPSConnection if url.scheme == "https" else HTTPConnection
     path = url.path or "/"
@@ -27,6 +27,13 @@ def make_handler(upstream: str) -> type[BaseHTTPRequestHandler]:
             body = self.rfile.read(size) if size else None
             if body is not None and self.command == "POST":
                 log_if_tool_call(body)
+                if (denied := enforce(body, decide)) is not None:
+                    self.send_response(200 if denied else 202)
+                    self.send_header("Content-Type", "application/json")
+                    self.send_header("Content-Length", str(len(denied)))
+                    self.end_headers()
+                    self.wfile.write(denied)
+                    return
             headers = {k: v for k, v in self.headers.items() if k.lower() not in _DROP}
             conn = conn_cls(url.netloc, timeout=300)
             try:
@@ -64,7 +71,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--port", type=int, default=8080)
     args = parser.parse_args(argv)
     # Localhost only: MCP spec warns local servers bound wider are open to DNS rebinding.
-    server = ThreadingHTTPServer(("127.0.0.1", args.port), make_handler(args.upstream))
+    server = ThreadingHTTPServer(
+        ("127.0.0.1", args.port), make_handler(args.upstream, decider_from_env())
+    )
     print(f"toolmarshal-http listening on 127.0.0.1:{server.server_port}", file=sys.stderr)
     server.serve_forever()
     return 0

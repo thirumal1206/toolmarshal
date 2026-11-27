@@ -6,6 +6,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import pytest
 
+from toolmarshal.decision import Decision
 from toolmarshal.http_proxy import main, make_handler
 
 
@@ -104,3 +105,32 @@ def test_main_binds_localhost(
     monkeypatch.setattr(ThreadingHTTPServer, "serve_forever", lambda self: None)
     assert main(["https://example.test/mcp", "--port", "0"]) == 0
     assert "listening on 127.0.0.1:" in capsys.readouterr().err
+
+
+def test_denied_tool_call_never_reaches_upstream() -> None:
+    upstream = ThreadingHTTPServer(("127.0.0.1", 0), FakeMcpServer)
+    deny = lambda r: Decision(allow=False, reason="test")  # noqa: E731
+    proxy = ThreadingHTTPServer(
+        ("127.0.0.1", 0), make_handler(f"http://127.0.0.1:{upstream.server_port}/mcp", deny)
+    )
+    _serve(proxy)  # upstream is deliberately not served: any forward would give 502
+    try:
+        call = {"jsonrpc": "2.0", "id": 9, "method": "tools/call", "params": {"name": "refund"}}
+        status, _, body = _call(proxy.server_port, "POST", call)
+        assert status == 200
+        assert json.loads(body)["error"]["code"] == -32001
+    finally:
+        proxy.shutdown()
+        upstream.server_close()
+
+
+def test_denied_notification_gets_202_and_no_body() -> None:
+    deny = lambda r: Decision(allow=False, reason="test")  # noqa: E731
+    proxy = ThreadingHTTPServer(("127.0.0.1", 0), make_handler("http://127.0.0.1:1/mcp", deny))
+    _serve(proxy)
+    try:
+        call = {"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "refund"}}
+        status, _, body = _call(proxy.server_port, "POST", call)
+        assert (status, body) == (202, b"")
+    finally:
+        proxy.shutdown()
